@@ -47,6 +47,10 @@ To be able to read the research you need to buy the subscription that provides y
 
 To be able to read the research you should have the "Scientist" or "Subscriber" role. In other case you are able to see the "Abstract" part of the published research only.
 
+## Details
+
+Research and voting comments should be stored at third-party networks that provide file storage systems (Filecoin or other), but in the current phase, it will be stored in any traditional database outside of the Ethereum network. Ethereum network will store the content hashes to provide the ability to check the content integrity
+
 ## Graphical abstract
 
 ![image info](./graphical-abstract.png)
