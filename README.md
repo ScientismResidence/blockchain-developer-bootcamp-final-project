@@ -30,12 +30,13 @@ To be able to publish scientific research you shoud have the account with "Scien
 
 To be able to invite others you need to have the "Scientist" role. The invitation creates an account with "Scientist" role and it only one way to create an account with such a role. Account will have default amount of reputation scores to be able publishing the research. This action spends some amount of reputation points.
 
-### 3. *Voting"
+### 3. *Voting*
 
 To be able to vote you need to have the "Scientist" role. Voting is going on for each draft research seperately. During the voting you have two options:
 1. Draft. You decline a referee report of this research. You also should provide a comment with detailed description of the declining reason.
 2. Publishing. You referee this research. Comments are optional.
-Presumably, each scientist will have reputation scores that form the "weight" in protocol to determine the research with "Published" state. Moving the research to this state is determined during each personal voting until the condition is met. This condition is an open question, the difficulty of building an algorithm is avoiding an iteration whole list of voters. Each voting process for that same research will increase the fees of contract execution. The algorithm must provides a solution to solve this problem.
+
+Presumably, each scientist will have reputation scores that form the "weight" in protocol to determine the research with "Published" state. Moving the research to this state is determined during each personal voting until the condition is met. This condition is an open question, the difficulty of building an algorithm is avoiding an iteration whole list of voters. Each voting process for that same research will increase the fees of contract execution. The algorithm must provides a solution with O(1) difficulty to solve this problem.
 
 If research successfully moved by consensus to the "Published" state the associated account gets some amount of reputation points.
 
