@@ -7,12 +7,20 @@ contract Censorshield {
         Recensed
     }
     
+    struct Item {
+        bytes32 id;
+        string name;
+        uint creationDate;
+        uint groupId;
+    }
+
     struct Group {
         uint id;
         address creator;
+        uint creationDate;
         string name;
-        uint minimalApproves;
-        uint8 minimalPercentsToApprove;
+        uint minimalVotes;
+        uint8 minimalPercentsToAccept;
         uint memberCounter;
         bytes32[] contents;
         mapping(address -> bool) membersMap;
@@ -27,8 +35,23 @@ contract Censorshield {
     /// @notice Mapping of groups ids to group struct.
     mapping(uint -> Group) public groupsMap;
     
-    mapping(uint -> address) public groupMembersMap;
-    mapping(address -> uint)
+    /// @notice Mappaing of members for each group
+    mapping(uint -> address[]) public groupMembersMap;
+    
+    /// @notice How many members the group has
+    mapping(uint -> uint) public groupMembersCounterMap;
+
+    /// @notice Mapping of groups for each member;
+    mapping(address -> uint[]) public memberGroupsMap;
+
+    /// @notice How many groups the member has;
+    mapping(address -> uint) public memberGroupsCounterMap;
+
+    /// @notice Mapping of draft content to determine the existens of item
+    mapping(bytes32 -> bool) public draftItemsMap;
+
+    /// @notice Mapping of accepted content to determine the existens of item
+    mapping(bytes32 -> bool) public acceptedItemsMap;
 
     function enroll()
         public
@@ -47,4 +70,7 @@ contract Censorshield {
 
     function addItem(uint groupId)
         public
+    {
+
+    }
 }
