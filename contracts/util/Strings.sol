@@ -30,8 +30,7 @@ library Strings {
         returns (bool) 
     {
         // Keeps the logic to detect two spaces in a row
-        // Such underflow is needed here to false return for first two spaces
-        uint previousSpace = -2;
+        uint previousSpace = _value.length + 1;
         for (uint i = 0; i < _value.length; i++) {
             bytes1 symbol = _value[i];
             
@@ -51,6 +50,7 @@ library Strings {
                 return false;
             }
         }
-        return _value;
+
+        return true;
     }
 }
