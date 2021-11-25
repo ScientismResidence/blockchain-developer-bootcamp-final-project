@@ -15,8 +15,7 @@ contract Censorshield {
         string name;
         uint creationDate;
         uint groupId;
-        StructuredLinkedList.List drafts;
-        uint[] content;
+        address author;
     }
 
     struct Group {
@@ -29,13 +28,17 @@ contract Censorshield {
         uint memberCounter;
         bytes32[] contents;
         mapping(address => bool) membersMap;
+        StructuredLinkedList.List drafts;
+        uint[] content;
     }
 
     /// @notice Keep the information about contract owner to handle the security
     address public owner = msg.sender;
 
     /// @notice Mapping of groups ids to group struct.
-    mapping(uint => Group) public groupsMap;
+    /// @dev The reason why this map is internal is solidity limitation
+    /// to access to Group.drafts property. Access to this data will be provided by custom getter
+    mapping(uint => Group) internal groupsMap;
 
     /// @notice Mapping of group names hashes and their ids
     mapping(bytes32 => uint) public groupNamesMap;
@@ -43,18 +46,21 @@ contract Censorshield {
     /// @notice handling the group ids
     uint public groupCounter;
     
-    /// @notice Mapping each member to groups
+    /// @notice Mapping each member to group ids
     mapping(address => uint[]) public memberGroupsMap;
 
     /// @notice Mapping each member to groups quantity
     /// @dev Needed to more advanced tracking the groups of member
     mapping(address => uint) public memberGroupsCounterMap;
 
-    //mapping(uint => StructuredLinkedList.List) public test;
+    /// @notice Mapping of item ids to items;
+    mapping(uint => Item) public itemsMap;
 
-    StructuredLinkedList.List public testList;
+    /// @notice Item counter to handle the item ids
+    uint public itemCounter;
 
     event LogAddGroup(uint indexed groupId, string indexed name, address indexed creator);
+    event LogAddItem(uint indexed itemId, uint indexed groupId, bytes32 hash, address author);
 
     modifier paidEnough() { 
         require(msg.value >= Price, "Not enough funds"); 
@@ -76,7 +82,7 @@ contract Censorshield {
     {
         // Check for max length
         bytes memory nameBytes = bytes(name);
-        require (nameBytes.length <= GroupNameMaxLength, "Group name has to be less 32 characters");
+        require (nameBytes.length <= GroupNameMaxLength, "Group name has to be less or equal to 32 characters");
 
         // Check for unacceptable symbols.
         // Name has to contain only [a-z0-9] and only one space in a row
@@ -114,21 +120,42 @@ contract Censorshield {
         emit LogAddGroup(groupCounter, group.name, msg.sender);
     }
 
-    function addItem(uint groupId)
+    function addItem(uint groupId, string memory name, bytes32 _hash)
         public
+        payable
+        paidEnough
+        refundExcess
     {
+        // Check for max length
+        bytes memory nameBytes = bytes(name);
+        require (nameBytes.length <= ItemNameMaxLength, "Item name has to be less or equal to 128 characters");
 
+        // Check the access to add new item by this sender
+        Group storage group = groupsMap[groupId];
+        require (group.membersMap[msg.sender] == true, "Sender has to be a member of group");
+
+        // Start to modify the state
+        Item storage item = itemsMap[++itemCounter];
+        item.id = itemCounter;
+        item.hash = _hash;
+        item.name = name;
+        item.creationDate = block.timestamp;
+        item.groupId = group.id;
+        item.author = msg.sender;
+
+        StructuredLinkedList.pushFront(group.drafts, item.id);
+
+        // Emit event
+        emit LogAddItem(item.id, item.groupId, _hash, item.author);
     }
 
-    function testAddItem(uint item)
+    function getDrafts(uint groupId)
         public
+        view
+        returns (uint size, string memory name)
     {
-        // Check that node doesn't exist in list
-        //require(StructuredLinkedList.nodeExists(testList, item) == false);
-
-        // Add new node
-        //bool result = StructuredLinkedList.pushFront(testList, item);
-
-        //emit LogTest(result);
+        Group storage group = groupsMap[groupId];
+        size = group.drafts.size;
+        name = group.name;
     }
 }
