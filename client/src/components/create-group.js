@@ -1,16 +1,22 @@
 import { useWeb3React } from "@web3-react/core";
 import React, { useState } from "react";
-import { Form, Button, InputGroup } from "react-bootstrap";
+import { Form, Button, InputGroup, Spinner } from "react-bootstrap";
 import { useCensorshieldContract } from "../hooks/useCensorShieldContract";
 import { parseUnits } from '@ethersproject/units';
+import { useAppContext } from "../app-context";
+import { events } from "../consts";
+import { useNavigate } from "react-router-dom";
 
 function CreateGroup() {
     const [isValidated, setIsValidated] = useState(false);
     const [name, setName] = useState('');
     const [minimalVotes, setMinimalVotes] = useState(1);
     const [minimalPercentsToAccept, setMinimalPercentsToAccept] = useState(50);
+    const [loading, setLoading] = useState(false);
     const contract = useCensorshieldContract();
     const { account } = useWeb3React();
+    const { setEvent, setGlobalError } = useAppContext();
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         const form = event.currentTarget;
@@ -21,6 +27,7 @@ function CreateGroup() {
         setIsValidated(true);
 
         if (form.checkValidity() === true) {
+            setLoading(true);
             try {
                 console.log("Transaction is starting");
                 const transaction = await contract.addGroup(name, minimalVotes, minimalPercentsToAccept, {
@@ -28,10 +35,23 @@ function CreateGroup() {
                     value: parseUnits("0.1", "ether")
                 })
                 await transaction.wait(1);
+                
+                setEvent(events.OnGroupAdded);
+
+                // Get the group id
+                let groupsCount = await contract.memberGroupsCounterMap(account);
+                let groupId = await contract.memberGroupsMap(account, groupsCount.toNumber() - 1);
+                navigate(`/group-content/${groupId.toNumber()}`);
             } catch (error) {
-                console.log(error);
+                setGlobalError({
+                    context: "Transaction Failed",
+                    error: error.message,
+                    isActive: true
+                });
             }
         }
+
+        setLoading(false);
     };
     
     return (
@@ -92,9 +112,8 @@ function CreateGroup() {
                     </Form.Text>
                 </Form.Group>
 
-                <Button variant="primary" type="submit">
-                    Create
-                </Button>
+                {loading && <Spinner animation="grow" />}
+                {!loading && <Button variant="primary" type="submit">Create</Button>}
             </Form>
         </>
     );

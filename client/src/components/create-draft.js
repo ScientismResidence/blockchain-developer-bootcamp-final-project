@@ -1,9 +1,10 @@
 import { useWeb3React } from "@web3-react/core";
 import React, { useState } from "react"
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Spinner } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router";
 import { parseUnits } from '@ethersproject/units';
 import { useCensorshieldContract } from "../hooks/useCensorShieldContract";
+import { useAppContext } from "../app-context";
 
 export const text = "Off-chain content! Work in progress... Existence of content is presented by Proof Of Existence with content hash stored in contract";
 
@@ -11,12 +12,14 @@ const CreateDraft = () => {
     const params = useParams();
     const contract = useCensorshieldContract();
     const { account } = useWeb3React();
+    const { setGlobalError } = useAppContext();
     const navigate = useNavigate();
 
     const [isValidated, setIsValidated] = useState(false);
     const [name, setName] = useState('');
     const [content, setContent] = useState(text);
     const [hash, setHash] = useState("0xf84d2795c6c8adb43c98ec8cd0919cb5288c82d2a7f13afed7ab18242b6898dc");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (event) => {
         const form = event.currentTarget;
@@ -26,6 +29,7 @@ const CreateDraft = () => {
         setIsValidated(true);
 
         if (form.checkValidity() === true) {
+            setLoading(true);
             try {
                 const transaction = await contract.addItem(params.groupId, name, hash, {
                     from: account,
@@ -34,9 +38,15 @@ const CreateDraft = () => {
                 await transaction.wait(1);
                 navigate(`/group-content/${params.groupId}`);
             } catch (error) {
-                console.log(error);
+                setGlobalError({
+                    context: "Transaction Failed",
+                    error: error.message,
+                    isActive: true
+                });
             }
         }
+
+        setLoading(false);
     };
 
     return (
@@ -63,10 +73,8 @@ const CreateDraft = () => {
                     <Form.Label>Content hash</Form.Label>
                     <Form.Control type="text" disabled value={hash}/>
                 </Form.Group>
-
-                <Button variant="primary" type="submit">
-                    Add
-                </Button>
+                {loading && <Spinner animation="grow" />}
+                {!loading && <Button variant="primary" type="submit">Add</Button>}                
             </Form>
         </>
     );

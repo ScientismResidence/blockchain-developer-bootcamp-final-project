@@ -8,16 +8,15 @@ import { text } from "./create-draft";
 
 const GroupContent = () => {
     const params = useParams();
-    const { currentGroup } = useAppContext();
     const contract = useCensorshieldContract();
-    const [content, setContent] = useState([]);
-
+    const [state, setState] = useState({});
+    //const [group, setGroup] = useState({});
 
     const ContentList = () => {
         return (
-            <Accordion defaultActiveKey={content[0].id} className="mt-4">
+            <Accordion defaultActiveKey={state.content[0].id} className="mt-4">
                 {
-                    content.map((value) => {
+                    state.content.map((value) => {
                         const status = value.isAccepted ? 'Published' : 'Draft';
                         return (
                             <Accordion.Item eventKey={value.id} key={value.id}>
@@ -45,13 +44,21 @@ const GroupContent = () => {
         );
     };
 
-    useEffect(async () => {
-        if (!currentGroup) {
-            return;
-        }
-        
+    useEffect(async () => {      
         try {
-            const contentIds = await Promise.all(Array.from(Array(currentGroup.size).reverse()).map((_, i) => contract.getGroupContentId(currentGroup.id, i)));
+            let group = await contract.getGroup(params.groupId);
+            group = {
+                id: params.groupId,
+                size: group[0].toNumber(),
+                name: group[1],
+                creator: group[2],
+                creationDate: group[3].toNumber(),
+                minimalVotes: group[4],
+                minimalPercentsToAccept: group[5],
+                memberCounter: group[6].toNumber()
+            };
+            
+            const contentIds = await Promise.all(Array.from(Array(group.size).reverse()).map((_, i) => contract.getGroupContentId(group.id, i)));
             let content = await Promise.all(contentIds.map(async (id) => { 
                 const result = await contract.itemsMap(id.toNumber());
                 return {
@@ -64,13 +71,16 @@ const GroupContent = () => {
                     isAccepted: result[6]
                 };
             }));
-            setContent(content);
+            setState({
+                group: group,
+                content: content
+            });
         } catch (error) {
             console.log("Error happened during group content fetching", error);
         }
-    }, [currentGroup]);
+    }, [params.groupId]);
     
-    if (!currentGroup) {
+    if (!state.group) {
         return (
             <Spinner animation="grow" />
         );
@@ -85,20 +95,20 @@ const GroupContent = () => {
                     className="d-flex justify-content-between align-items-start"
                 >
                     <div className="ms-2 me-auto">
-                    <div className="fw-bold">{currentGroup.name}</div>
+                    <div className="fw-bold">{state.group.name}</div>
                         <div className="d-flex">
-                            <div className="mx-1"><small>Created: {moment(new Date(currentGroup.creationDate)).format('YYYY-MM-DD')}</small></div>
-                            <div className="mx-1"><small>Members: {currentGroup.memberCounter}</small></div>
-                            <div className="mx-1"><small>Creator: {currentGroup.creator}</small></div>
+                            <div className="mx-1"><small>Created: {moment(new Date(state.group.creationDate)).format('YYYY-MM-DD')}</small></div>
+                            <div className="mx-1"><small>Members: {state.group.memberCounter}</small></div>
+                            <div className="mx-1"><small>Creator: {state.group.creator}</small></div>
                         </div>
                     </div>
                     <Badge variant="primary" pill>
-                        {currentGroup.size}
+                        {state.group.size}
                     </Badge>
                 </ListGroup.Item>
             </ListGroup>
-            {content.length == 0 && <div className="mt-3">It looks like this group is still empty. Do you want to add something?</div>}
-            {content.length > 0 && <ContentList/>}
+            {state.content.length == 0 && <div className="mt-3">It looks like this group is still empty. Do you want to add something?</div>}
+            {state.content.length > 0 && <ContentList/>}
             <div className="mt-3">
                 <Link to={`/create-draft/${params.groupId}`}>Create draft</Link>
             </div>

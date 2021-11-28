@@ -4,10 +4,11 @@ import { ListGroup } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "../app-context";
 import { useCensorshieldContract } from "../hooks/useCensorShieldContract";
+import { consts, events } from "../consts";
 
 const Groups = () => {
     const { account } = useWeb3React();
-    const { setCurrentGroup } = useAppContext();
+    const { event, setCurrentGroup } = useAppContext();
     const contract = useCensorshieldContract();
     const [groups, setGroups] = useState([]);
     const params = useParams();
@@ -74,7 +75,7 @@ const Groups = () => {
         } catch (error) {
             console.log("Error happened during groups fetching", error);
         }
-    }, [account]);
+    }, [account, event == events.OnGroupAdded]);
 
     return (
         <>

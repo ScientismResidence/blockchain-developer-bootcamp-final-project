@@ -4,6 +4,7 @@ import { status } from "./consts";
 const GLOBAL_ERROR_TYPE = 'GlobalError';
 const USER_TYPE = "User";
 const CURRENT_GROUP_TYPE = "CurrentGroup";
+const EVENT_TYPE = "EventType";
 
 const initialContext = {
     user: {
@@ -19,7 +20,9 @@ const initialContext = {
     },
     setGlobalError: () => {},
     currentGroup: undefined,
-    setCurrentGroup: () => {}
+    setCurrentGroup: () => {},
+    event: undefined,
+    setEvent: () => {}
 }
 
 const appReducer = (state, {type, payload}) => {
@@ -38,6 +41,11 @@ const appReducer = (state, {type, payload}) => {
             return {
                 ...state,
                 currentGroup: payload
+            }
+        case EVENT_TYPE:
+            return {
+                ...state,
+                event: payload
             }
         default:
             return false;
@@ -62,6 +70,10 @@ export const AppContextProvider = ({ children }) => {
         currentGroup: store.currentGroup,
         setCurrentGroup: (value) => {
             dispatch( {type: CURRENT_GROUP_TYPE, payload: value} );
+        },
+        event: store.event,
+        setEvent: (value) => {
+            dispatch( {type: EVENT_TYPE, payload: value} );
         }
     };
 
