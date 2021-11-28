@@ -3,6 +3,7 @@ import { status } from "./consts";
 
 const GLOBAL_ERROR_TYPE = 'GlobalError';
 const USER_TYPE = "User";
+const CURRENT_GROUP_TYPE = "CurrentGroup";
 
 const initialContext = {
     user: {
@@ -16,7 +17,9 @@ const initialContext = {
         error: undefined,
         isActive: false
     },
-    setGlobalError: () => {}
+    setGlobalError: () => {},
+    currentGroup: undefined,
+    setCurrentGroup: () => {}
 }
 
 const appReducer = (state, {type, payload}) => {
@@ -30,6 +33,11 @@ const appReducer = (state, {type, payload}) => {
             return {
                 ...state,
                 user: payload
+            }
+        case CURRENT_GROUP_TYPE:
+            return {
+                ...state,
+                currentGroup: payload
             }
         default:
             return false;
@@ -50,6 +58,10 @@ export const AppContextProvider = ({ children }) => {
         user: store.user,
         setUser: (user) => {
             dispatch( {type: USER_TYPE, payload: user });
+        },
+        currentGroup: store.currentGroup,
+        setCurrentGroup: (value) => {
+            dispatch( {type: CURRENT_GROUP_TYPE, payload: value} );
         }
     };
 

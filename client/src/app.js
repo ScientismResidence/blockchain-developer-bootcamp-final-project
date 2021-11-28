@@ -15,6 +15,8 @@ import CreateGroupPage from './pages/create-group';
 
 
 function App() {
+    console.log('Contract address is', process.env.CENSORSHIELD_CONTRACT_ADDRESS);
+
     if (window.ethereum) {
         window.ethereum.on('networkChanged', () => window.location.reload());
     }
@@ -40,4 +42,4 @@ function App() {
     )
 }
 
-export default App
+export default App;

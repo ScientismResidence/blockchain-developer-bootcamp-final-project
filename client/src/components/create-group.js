@@ -1,22 +1,40 @@
+import { useWeb3React } from "@web3-react/core";
 import React, { useState } from "react";
 import { Form, Button, InputGroup } from "react-bootstrap";
+import { useCensorshieldContract } from "../hooks/useCensorShieldContract";
+import { parseUnits } from '@ethersproject/units';
 
 function CreateGroup() {
     const [isValidated, setIsValidated] = useState(false);
     const [name, setName] = useState('');
     const [minimalVotes, setMinimalVotes] = useState(1);
     const [minimalPercentsToAccept, setMinimalPercentsToAccept] = useState(50);
+    const contract = useCensorshieldContract();
+    const { account } = useWeb3React();
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         const form = event.currentTarget;
-        if (form.checkValidity() === false) {
+        //if (form.checkValidity() === false) {
             event.preventDefault();
             event.stopPropagation();
-        }
-
-        console.log(name, minimalVotes, minimalPercentsToAccept);
+        //}
 
         setIsValidated(true);
+
+        if (form.checkValidity() === true) {
+            console.log(name, minimalVotes, minimalPercentsToAccept);
+
+            try {
+                console.log("Transaction is starting");
+                const transaction = await contract.addGroup(name, minimalVotes, minimalPercentsToAccept, {
+                    from: account,
+                    value: parseUnits("0.1", "ether")
+                })
+                await transaction.wait(1);
+            } catch (error) {
+                console.log(error);
+            }
+        }
     };
     
     return (

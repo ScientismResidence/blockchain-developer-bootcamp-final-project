@@ -13,7 +13,6 @@ function Connect() {
     const { user, setUser, setGlobalError } = useAppContext();
     const navigate = useNavigate();
 
-    console.log('User state', user.state);
     if (user.state === status.NoConnection && 
         localStorage.getItem('ConnectionState') === status.Connected) {
         activate(web3Connector);
@@ -35,7 +34,7 @@ function Connect() {
         } else {
             return setConnectionProxy(status.Ready);
         }
-    }, [active]);
+    }, [active, account]);
 
     const onConnectClick = async () => {
         if (!window.ethereum) {

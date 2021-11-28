@@ -1,13 +1,11 @@
 import React from "react";
 import { Col, Row } from "react-bootstrap";
-import { Outlet } from "react-router-dom";
 import { useAppContext } from "../app-context";
 import Groups from "../components/groups";
 import { status } from "../consts";
 
-const HomePage = ({location}) => {
+function ContentPage() {
     const { user } = useAppContext();
-    console.log(location);
 
     if (user.state !== status.Connected) {
         return (
@@ -21,10 +19,10 @@ const HomePage = ({location}) => {
         <Row>
             <Col><Groups/></Col>
             <Col xs={9}>
-                <Outlet/>
+                Content
             </Col>
         </Row>
     );
 };
 
-export default HomePage;
+export default ContentPage;

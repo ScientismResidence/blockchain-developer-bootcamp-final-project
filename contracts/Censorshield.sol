@@ -26,7 +26,6 @@ contract Censorshield {
         uint32 minimalVotes;
         uint8 minimalPercentsToAccept;
         uint memberCounter;
-        bytes32[] contents;
         mapping(address => bool) membersMap;
         StructuredLinkedList.List drafts;
         uint[] content;
@@ -149,13 +148,24 @@ contract Censorshield {
         emit LogAddItem(item.id, item.groupId, _hash, item.author);
     }
 
-    function getDrafts(uint groupId)
+    function getGroup(uint groupId)
         public
         view
-        returns (uint size, string memory name)
+        returns (uint size, 
+            string memory name,
+            address creator,
+            uint creationDate,
+            uint32 minimalVotes,
+            uint8 minimalPercentsToAccept,
+            uint memberCounter)
     {
         Group storage group = groupsMap[groupId];
         size = group.drafts.size;
         name = group.name;
+        creator = group.creator;
+        creationDate = group.creationDate;
+        minimalVotes = group.minimalVotes;
+        minimalPercentsToAccept = group.minimalPercentsToAccept;
+        memberCounter = group.memberCounter;
     }
 }
