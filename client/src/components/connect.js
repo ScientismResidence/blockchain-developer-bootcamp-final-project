@@ -1,6 +1,7 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Badge, Button, Row, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { formatEther } from "@ethersproject/units";
 import { useAppContext } from "../app-context";
 import { shortenAddress } from "../util/string-util";
@@ -10,6 +11,7 @@ import { status } from "../consts";
 function Connect() {
     const {activate, active, account, library, deactivate } = useWeb3React();
     const { user, setUser, setGlobalError } = useAppContext();
+    const navigate = useNavigate();
 
     console.log('User state', user.state);
     if (user.state === status.NoConnection && 
@@ -54,6 +56,11 @@ function Connect() {
         }
     };
 
+    const onLogout = () => {
+        deactivate();
+        navigate('/');
+    }
+
     if (user.state == status.Ready) {
         return (
             <Button onClick={() => onConnectClick()}>Connect Metamask</Button>
@@ -75,7 +82,7 @@ function Connect() {
                     <div><Badge bg="success">{shortenAddress(account)}</Badge></div>
                     <div><Badge bg="success">{user.balance}</Badge></div>
                 </div>
-                <div><a href="#" className="link-primary" onClick={() => deactivate()}>Disconnect</a></div>
+                <div><a href="#" className="link-primary" onClick={onLogout}>Disconnect</a></div>
             </div>
         );
     }

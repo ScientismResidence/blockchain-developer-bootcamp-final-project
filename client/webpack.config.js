@@ -16,6 +16,7 @@ module.exports = {
         },
         port: 8080,
         open: true,
+        historyApiFallback: true,
         liveReload: true
     },
     // Rules of how webpack will take our files, complie & bundle them for the browser 
