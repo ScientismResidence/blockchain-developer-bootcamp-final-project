@@ -1,57 +1,77 @@
 # blockchain-developer-bootcamp-final-project
+
+I've changed the initial idea slitly to make the project more abstract. Please see the README-v1.0.md to see the difference.
+
 # Abstract
 
-Decentralized protocol for publishing of scientific research
+Decentralized protocol for publishing of content with Proof of Existence concept.
+Platform allows you to create a group that will determine the scope of the content. This group by default will contain draft content that required to be voted by group members to be published. Voting rules are determined by the group creator, how many members should vote for a content is stored in immutable group settings. Group members are able to invite others to become new group members. Only group members are able to add new content for that group.
 
 # Motivation
 
-All of the current ways of publishing scientific research are centralized. It leads to erosion of trust in that process with a huge lack of transparency. Decentralized protocol with a set of internal rules will form an intention to referee only high-quality articles by the scientific society itself.
+You cannot rely on centralized content storages by having next obstacles:
+* Centralized administrator can block/restrict access/availability of the content.
+* Content platform has own rules to publish content and you unable control what the content in prefered area should be
 
 # Scpecification
 
-The description below is the first draft concept with many uncertainties and contains only minimum value product features.
-
-## Entities
-
-1. Role
-    * Scientist is allowed to publish and read any content
-    * Subscriber is allowed to read the published and draft content (all the funds should be distributed among the scientists as part of intention rules even with fund creation aka "Nobel Prize", but it's out of confines of the minimum value product)
-    * Account without a role is allowed to read only "Abstract" part of the *published* research.
-2. Reputation scores are points to be spend for actions: to invite and to publish. They earned by moving a research to the category of "Published" by the consensus.
-3. Lifetime reputation score - sum of used and unused reputation scores, determining the weight of the account in consensus of published research.
-
 ## Actions
 
-### 1. *Publishing of the research*
+### 1. *Add new group*
 
-To be able to publish scientific research you shoud have the account with "Scientist" role. This action spends some amount of reputation points.
+You need specify unique name for a group. After adding you will be sole member such a group and you will be able to invite others. Group has rules for voting process, exactly how many members required to public draft content.
+1. Minimal votes settings. Allows set exact number of members required for publish content. But maximal votes count is restricted by current group members.
+2. Minimal percents of members required to publish content. To define the threshold contract will consider maximal applyable value.
+In current flow the first member of group is able to misuse the content publishing, awhile there are no other members.
 
-### 2. *Invitation*
+### 2. "Add new draft"
 
-To be able to invite others you need to have the "Scientist" role. The invitation creates an account with "Scientist" role and it only one way to create an account with such a role. Account will have default amount of reputation scores to be able publishing the research. This action spends some amount of reputation points.
+Member of the group is able to add new draft. For each draft the name, content (any digital asset) and hash of content should be presented. Content itself is off-chain information, contract stores only hash of the content implementing Proof of Existence concept.
 
 ### 3. *Voting*
 
-To be able to vote you need to have the "Scientist" role. Voting is going on for each draft research seperately. During the voting you have two options:
-1. Draft. You decline a referee report of this research. You also should provide a comment with detailed description of the declining reason.
-2. Publishing. You referee this research. Comments are optional.
+Member of the group is able to vote for a draft content. When group threshold is reached the content changes its status to published.
+(not implementet currently)
 
-Presumably, each scientist will have reputation scores that form the "weight" in protocol to determine the research with "Published" state. Moving the research to this state is determined during each personal voting until the condition is met. This condition is an open question, the difficulty of building an algorithm is avoiding an iteration whole list of voters. Each voting process for that same research will increase the fees of contract execution. The algorithm must provides a solution with O(1) difficulty to solve this problem.
+### 4. *Invitation*
 
-If research successfully moved by consensus to the "Published" state the associated account gets some amount of reputation points.
+Member of the group is able to invite others to become a new group members.
+(not implementet currently)
 
-### 4. *Subscribe*
+## Setup
 
-To be able to read the research you need to buy the subscription that provides you access to it. The subscription is valid for a certain amount of time (blocks) and requires contract execution with certain amount of network unit (ETH)
+### Contracts
 
-### 5. *Read*
+- `npm i`
+- Run Ganache on port `7545`
+- `truffle migrate --network development`
+- `truffle test`
+- `.env` variables to deploy for public testnetwork
+  - MNEMONIC
+  - INFURA_PROJECT_ID
 
-To be able to read the research you should have the "Scientist" or "Subscriber" role. In other case you are able to see the "Abstract" part of the published research only.
+To run local ui application you need at least run `truffle compile`
 
-## Details
+### Client
 
-Research and voting comments should be stored at third-party networks that provide file storage systems (Filecoin or other), but in the current phase, it will be stored in any traditional database outside of the Ethereum network. Ethereum network will store the content hashes to provide the ability to check the content integrity
+- Create `.env` file in `client` directory
+- Add to `.env` file `CENSORSHIELD_CONTRACT_ADDRESS` variable. Set the deployed `Censorshield` address as a value
+- `npm i`
+- `npm start`
 
-## Graphical abstract
+- You will be able to populate the contract directly from application
+- Application support `4` (Rinkeby) and `1337` (Ganache) networks to connect
 
-![image info](./graphical-abstract.png)
+## Bootcamp
+
+### Deployed application
+
+https://censorshield.vercel.app/
+
+### Screencast
+
+https://youtu.be/3h48xc0243o
+
+### Public Ethereum wallet for certification
+
+`0xEFA9eC92dB91a1aEC5802a3E83924101CE060e08`
