@@ -41,8 +41,10 @@ function CreateGroup() {
                 // Get the group id
                 let groupsCount = await contract.memberGroupsCounterMap(account);
                 let groupId = await contract.memberGroupsMap(account, groupsCount.toNumber() - 1);
+                setLoading(false);
                 navigate(`/group-content/${groupId.toNumber()}`);
             } catch (error) {
+                setLoading(false);
                 setGlobalError({
                     context: "Transaction Failed",
                     error: error.message,
@@ -50,8 +52,6 @@ function CreateGroup() {
                 });
             }
         }
-
-        setLoading(false);
     };
     
     return (

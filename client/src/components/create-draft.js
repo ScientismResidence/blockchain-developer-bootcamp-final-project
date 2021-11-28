@@ -36,8 +36,10 @@ const CreateDraft = () => {
                     value: parseUnits("0.1", "ether")
                 });
                 await transaction.wait(1);
+                setLoading(false);
                 navigate(`/group-content/${params.groupId}`);
             } catch (error) {
+                setLoading(false);
                 setGlobalError({
                     context: "Transaction Failed",
                     error: error.message,
@@ -45,8 +47,6 @@ const CreateDraft = () => {
                 });
             }
         }
-
-        setLoading(false);
     };
 
     return (
