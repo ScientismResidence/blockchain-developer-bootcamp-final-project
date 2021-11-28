@@ -1,6 +1,7 @@
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
 import { Badge, Button, Row, Spinner } from 'react-bootstrap';
+import { formatEther } from "@ethersproject/units";
 import { useAppContext } from "../app-context";
 import { shortenAddress } from "../util/string-util";
 import { web3Connector } from "../util/web3-connector";
@@ -10,33 +11,24 @@ function Connect() {
     const {activate, active, account, library, deactivate } = useWeb3React();
     const { user, setUser, setGlobalError } = useAppContext();
 
-    const determineInitialState = () => {
-        if (!window.ethereum) {
-            user.state = status.NoConnection;
-        } else {
-            user.state = status.Ready;
-        }
-
-        setUser(user);
-        return useState(user.state);
-    };
-    
-    let [connection, setConnection] = determineInitialState();
-
-    if (connection === status.Ready && 
+    console.log('User state', user.state);
+    if (user.state === status.NoConnection && 
         localStorage.getItem('ConnectionState') === status.Connected) {
         activate(web3Connector);
     }
 
     const setConnectionProxy = (value) => {
         localStorage.setItem('ConnectionState', value);
-        setConnection(value);
+        user.state = value;
+        setUser(user);
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         if (!window.ethereum) {
             return setConnectionProxy(status.NoConnection);
         } else if (active) {
+            const balance = await library.getBalance(account);
+            user.balance = parseFloat(formatEther(balance)).toPrecision(4);
             return setConnectionProxy(status.Connected);
         } else {
             return setConnectionProxy(status.Ready);
@@ -62,28 +54,27 @@ function Connect() {
         }
     };
 
-    const rowStyle = {
-        background: '#CDCDCD'
-    };
-
-    if (connection == status.Ready) {
+    if (user.state == status.Ready) {
         return (
             <Button onClick={() => onConnectClick()}>Connect Metamask</Button>
         );
-    } else if (connection == status.NoConnection) {
+    } else if (user.state == status.NoConnection) {
         return (
             <span>Setup Metamask to connect</span>
         );
-    } else if (connection == status.Connecting) {
+    } else if (user.state == status.Connecting) {
         return <Spinner animation="grow" />;
     } else {
         return (
-            <div className="d-flex justify-content-end" style={rowStyle}>
+            <div className="d-flex justify-content-end">
                 <div className="justify-content-end">
                     <div>Account</div>
                     <div className="text-end">Balance</div>
                 </div>
-                <div className="mx-2"><Badge bg="success">{shortenAddress(account)}</Badge></div>
+                <div className="mx-2">
+                    <div><Badge bg="success">{shortenAddress(account)}</Badge></div>
+                    <div><Badge bg="success">{user.balance}</Badge></div>
+                </div>
                 <div><a href="#" className="link-primary" onClick={() => deactivate()}>Disconnect</a></div>
             </div>
         );

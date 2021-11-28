@@ -24,6 +24,7 @@ function App() {
         <Web3ReactProvider getLibrary={getLibrary}>    
             <Container>
                 <Header/>
+                <hr/>
                 <GlobalError/>
             </Container>
         </Web3ReactProvider>
