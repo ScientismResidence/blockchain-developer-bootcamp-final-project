@@ -1,6 +1,5 @@
 pragma solidity 0.8.10;
 
-import "solidity-linked-list/contracts/StructuredLinkedList.sol";
 import "./util/Strings.sol";
 
 contract Censorshield {

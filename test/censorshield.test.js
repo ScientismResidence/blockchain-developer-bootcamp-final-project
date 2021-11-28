@@ -106,7 +106,7 @@ contract("Censorshield", (accounts) => {
             let result = await instance.addGroup(AcceptableGroupName, AcceptableMinimalVotes, AcceptableMinimalPercentsToAccept, AcceptableTransactionSignature);
             const groupId = result.logs[0].args.groupId.toNumber();
             await instance.addItem(groupId, AcceptableItemName, Item1Hash, AcceptableTransactionSignature);
-            const {size, name} = await instance.getDrafts(groupId);
+            const {size, name} = await instance.getGroup(groupId);
             assert.equal(1, size.toNumber(), "Drafts is emtpy after adding content to the group");
         });
     });
