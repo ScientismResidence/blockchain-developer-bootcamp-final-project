@@ -5,9 +5,8 @@ import { useAppContext } from "../app-context";
 import Groups from "../components/groups";
 import { status } from "../consts";
 
-const HomePage = ({location}) => {
+const HomePage = () => {
     const { user } = useAppContext();
-    console.log(location);
 
     if (user.state !== status.Connected) {
         return (

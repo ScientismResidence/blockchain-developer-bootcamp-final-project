@@ -11,8 +11,9 @@ import Header from './components/header';
 import { AppContextProvider } from './app-context';
 import GlobalError from './components/global-error';
 import HomePage from './pages/home';
-import CreateGroupPage from './pages/create-group';
-
+import CreateGroup from './components/create-group';
+import GroupContent from './components/group-content';
+import CreateDraft from './components/create-draft';
 
 function App() {
     console.log('Contract address is', process.env.CENSORSHIELD_CONTRACT_ADDRESS);
@@ -33,8 +34,12 @@ function App() {
                 <hr/>
                 <GlobalError/>
                 <Routes>
-                    <Route exact path="/" element={<HomePage/>} />
-                    <Route exact path="/create-group" element={<CreateGroupPage/>} />
+                    <Route path="/" element={<HomePage/>}>
+                        <Route path="create-group" element={<CreateGroup/>} />
+                        <Route path="create-draft/:groupId" element={<CreateDraft/>}/>
+                        <Route path="group-content/:groupId" element={<GroupContent/>} />
+                    </Route>
+                    <Route path="*" element={<HomePage/>}/>
                 </Routes>
             </Container>
         </Web3ReactProvider>

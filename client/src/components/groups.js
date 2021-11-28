@@ -2,17 +2,20 @@ import { useWeb3React } from "@web3-react/core";
 import React, { useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
+import { useAppContext } from "../app-context";
 import { useCensorshieldContract } from "../hooks/useCensorShieldContract";
 
 const Groups = () => {
     const { account } = useWeb3React();
+    const { setCurrentGroup } = useAppContext();
     const contract = useCensorshieldContract();
     const [groups, setGroups] = useState([]);
+    const params = useParams();
 
     const ConnectionInfo = () => {
         return (
             <div>
-                    <p>You don't have any group. Get invite from others or create your own group!</p>
+                <p>You don't have any group. Get invite from others or create your own group!</p>
             </div>
         );
     }
@@ -21,12 +24,13 @@ const Groups = () => {
         return (
             <ListGroup as="ul">
                 {groups.map((value) => {
-                    let isActive = false;//value.id == id;
+                    let isActive = value.id == params.groupId;
                     return (
                         <ListGroup.Item as="li" key={value.id} variant="info" active={isActive}>
-                            <Link 
+                            <Link
+                                onClick={() => setCurrentGroup(value)}
                                 className="link-dark"
-                                to={{ pathname: '/', search: `?id=${value.id}` }}>
+                                to={`/group-content/${value.id}`}>
                                     {value.name}
                             </Link>
                         </ListGroup.Item>
@@ -60,6 +64,13 @@ const Groups = () => {
                 }));
             }
             setGroups(memberGroups);
+
+            if (params.groupId && memberGroups.length > 0) {
+                let result = memberGroups.find(value => {
+                    return value.id == params.groupId;
+                });
+                setCurrentGroup(result);
+            }
         } catch (error) {
             console.log("Error happened during groups fetching", error);
         }

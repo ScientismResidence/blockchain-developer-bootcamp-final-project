@@ -16,6 +16,7 @@ contract Censorshield {
         uint creationDate;
         uint groupId;
         address author;
+        bool isAccepted;
     }
 
     struct Group {
@@ -27,7 +28,7 @@ contract Censorshield {
         uint8 minimalPercentsToAccept;
         uint memberCounter;
         mapping(address => bool) membersMap;
-        StructuredLinkedList.List drafts;
+        uint contentCounter;
         uint[] content;
     }
 
@@ -142,7 +143,8 @@ contract Censorshield {
         item.groupId = group.id;
         item.author = msg.sender;
 
-        StructuredLinkedList.pushFront(group.drafts, item.id);
+        group.contentCounter++;
+        group.content.push(item.id);
 
         // Emit event
         emit LogAddItem(item.id, item.groupId, _hash, item.author);
@@ -160,12 +162,20 @@ contract Censorshield {
             uint memberCounter)
     {
         Group storage group = groupsMap[groupId];
-        size = group.drafts.size;
+        size = group.contentCounter;
         name = group.name;
         creator = group.creator;
         creationDate = group.creationDate;
         minimalVotes = group.minimalVotes;
         minimalPercentsToAccept = group.minimalPercentsToAccept;
         memberCounter = group.memberCounter;
+    }
+
+    function getGroupContentId(uint groupId, uint index)
+        public
+        view
+        returns (uint id)
+    {
+        id = groupsMap[groupId].content[index];
     }
 }

@@ -14,16 +14,13 @@ function CreateGroup() {
 
     const handleSubmit = async (event) => {
         const form = event.currentTarget;
-        //if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        //}
+        
+        event.preventDefault();
+        event.stopPropagation();
 
         setIsValidated(true);
 
         if (form.checkValidity() === true) {
-            console.log(name, minimalVotes, minimalPercentsToAccept);
-
             try {
                 console.log("Transaction is starting");
                 const transaction = await contract.addGroup(name, minimalVotes, minimalPercentsToAccept, {
@@ -46,14 +43,14 @@ function CreateGroup() {
                     <InputGroup hasValidation>
                         <Form.Control 
                             onChange={(event) => setName(event.target.value)} 
-                            type="text" maxLength="128" placeholder="name" 
+                            type="text" maxLength="32" placeholder="name" 
                             pattern="^([a-z0-9]{1,}|[\s]{1}[a-z0-9]{1,})*" required/>
                         <Form.Control.Feedback type="invalid">
                             Please, match the value with required format.
                         </Form.Control.Feedback>
                     </InputGroup>
                     <Form.Text className="text-muted">
-                        Name of your group. Maximum 128 latin characters in lower case. Maximum one space in a row.
+                        Name of your group. Maximum 32 latin characters in lower case. Maximum one space in a row.
                     </Form.Text>
                 </Form.Group>
 
