@@ -31,7 +31,7 @@ const GroupContent = () => {
                                         <small>Hash: {value.hash}</small>
                                     </div>
                                     <div className="d-flex">
-                                        <div><small>Created: {moment(new Date(value.creationDate)).format('YYYY-MM-DD')}</small></div>
+                                        <div><small>Created: {moment(new Date(value.creationDate * 1000)).format('YYYY-MM-DD')}</small></div>
                                         <div className="mx-2"><small>Creator: {value.author}</small></div>
                                     </div>
                                     <div className="mt-4">{text}</div>
@@ -97,7 +97,7 @@ const GroupContent = () => {
                     <div className="ms-2 me-auto">
                     <div className="fw-bold">{state.group.name}</div>
                         <div className="d-flex">
-                            <div className="mx-1"><small>Created: {moment(new Date(state.group.creationDate)).format('YYYY-MM-DD')}</small></div>
+                            <div className="mx-1"><small>Created: {moment(new Date(state.group.creationDate * 1000)).format('YYYY-MM-DD')}</small></div>
                             <div className="mx-1"><small>Members: {state.group.memberCounter}</small></div>
                             <div className="mx-1"><small>Creator: {state.group.creator}</small></div>
                         </div>
